@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  panel:
+    build: ./panel
+    container_name: jexactyl_panel
+    ports:
+      - "8080:80"
+    depends_on:
+      - database
+      - cache
+    environment:
+      APP_ENV: production
+      APP_URL: http://localhost:8080
+      DB_CONNECTION: mysql
+      DB_HOST: database
+      DB_DATABASE: jexactyl
+      DB_USERNAME: jexactyl
+      DB_PASSWORD: secret
+      REDIS_HOST: cache
+
+  database:
+    image: mariadb:11
+    container_name: jexactyl_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: jexactyl
+      MYSQL_USER: jexactyl
+      MYSQL_PASSWORD: secret
+    volumes:
+      - db_data:/var/lib/mysql
+
+  cache:
+    image: redis:latest
+    container_name: jexactyl_cache
+    restart: always
+
+volumes:
+  db_data:
